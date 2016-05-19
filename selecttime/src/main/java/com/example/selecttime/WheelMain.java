@@ -17,18 +17,15 @@ public class WheelMain {
     private WheelView wv_hours;
     private WheelView wv_mins;
     private boolean hasSelectTime;
+    private boolean hasYear;
+    private boolean hasMonth;
+    private boolean hasDay;
+    private boolean hasHour;
+    private boolean hasMinute;
 
     public WheelMain(View view) {
         super();
         this.view = view;
-        hasSelectTime = false;
-        setView(view);
-    }
-
-    public WheelMain(View view, boolean hasSelectTime) {
-        super();
-        this.view = view;
-        this.hasSelectTime = hasSelectTime;
         setView(view);
     }
 
@@ -73,62 +70,74 @@ public class WheelMain {
 
         final List<String> list_big = Arrays.asList(months_big);
         final List<String> list_little = Arrays.asList(months_little);
-
-        // 年
         wv_year = (WheelView) view.findViewById(R.id.year);
-        wv_year.setAdapter(new NumericWheelAdapter(START_YEAR, END_YEAR));// 设置"年"的显示数据
-        wv_year.setCyclic(true);// 可循环滚动
-		//wv_year.setLabel("年");// 添加文字
-        wv_year.setCurrentItem(year - START_YEAR);// 初始化时显示的数据
-        //wv_year.setVisibility(View.GONE);
-
-        // 月
         wv_month = (WheelView) view.findViewById(R.id.month);
-        wv_month.setAdapter(new NumericWheelAdapter(1, 12));
-        wv_month.setCyclic(true);
-		wv_month.setLabel("月");
-        wv_month.setCurrentItem(month);
-
-        // 日
         wv_day = (WheelView) view.findViewById(R.id.day);
-        wv_day.setCyclic(true);
-        // 判断大小月及是否闰年,用来确定"日"的数据
-        if (list_big.contains(String.valueOf(month + 1))) {
-            wv_day.setAdapter(new NumericWheelAdapter(1, 31));
-        } else if (list_little.contains(String.valueOf(month + 1))) {
-            wv_day.setAdapter(new NumericWheelAdapter(1, 30));
-        } else {
-            // 闰年
-            if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
-                wv_day.setAdapter(new NumericWheelAdapter(1, 29));
-            else
-                wv_day.setAdapter(new NumericWheelAdapter(1, 28));
-        }
-		wv_day.setLabel("日");
-        wv_day.setCurrentItem(day - 1);
-        //时
         wv_hours = (WheelView) view.findViewById(R.id.hour);
-        //分
         wv_mins = (WheelView) view.findViewById(R.id.min);
-        if (!hasSelectTime) {
-            wv_hours.setVisibility(View.VISIBLE);
-            wv_mins.setVisibility(View.VISIBLE);
 
+        //---年
+        if (hasYear) {
+            wv_year.setVisibility(View.VISIBLE);
+            wv_year.setAdapter(new NumericWheelAdapter(START_YEAR, END_YEAR));// 设置"年"的显示数据
+            wv_year.setCyclic(true);// 可循环滚动
+            wv_year.setLabel("年");// 添加文字
+            wv_year.setCurrentItem(year - START_YEAR);// 初始化时显示的数据
+        } else {
+            wv_year.setVisibility(View.GONE);
+        }
+
+        //---月
+        if (hasMonth) {
+            wv_month.setVisibility(View.VISIBLE);
+            wv_month.setAdapter(new NumericWheelAdapter(1, 12));
+            wv_month.setCyclic(true);
+            wv_month.setLabel("月");
+            wv_month.setCurrentItem(month);
+        } else {
+            wv_month.setVisibility(View.GONE);
+        }
+        //---日
+        if (hasDay) {
+            wv_day.setVisibility(View.VISIBLE);
+            wv_day.setCyclic(true);
+            // 判断大小月及是否闰年,用来确定"日"的数据
+            if (list_big.contains(String.valueOf(month + 1))) {
+                wv_day.setAdapter(new NumericWheelAdapter(1, 31));
+            } else if (list_little.contains(String.valueOf(month + 1))) {
+                wv_day.setAdapter(new NumericWheelAdapter(1, 30));
+            } else {
+                // 闰年
+                if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0)
+                    wv_day.setAdapter(new NumericWheelAdapter(1, 29));
+                else
+                    wv_day.setAdapter(new NumericWheelAdapter(1, 28));
+            }
+            wv_day.setLabel("日");
+            wv_day.setCurrentItem(day - 1);
+        } else {
+            wv_day.setVisibility(View.GONE);
+        }
+        //---时
+        if (hasHour) {
+            wv_hours.setVisibility(View.VISIBLE);
             wv_hours.setAdapter(new NumericWheelAdapter(0, 23));
             wv_hours.setCyclic(true);// 可循环滚动
-			//wv_hours.setLabel("时");// 添加文字
+            wv_hours.setLabel("时");// 添加文字
             wv_hours.setCurrentItem(hour);
-
-
-            wv_mins.setAdapter(new NumericWheelAdapter(0, 59));
-            wv_mins.setCyclic(true);// 可循环滚动
-            //wv_mins.setLabel("分");// 添加文字
-            wv_mins.setCurrentItem(minute);
         } else {
             wv_hours.setVisibility(View.GONE);
+        }
+        //---分
+        if (hasMinute) {
+            wv_mins.setVisibility(View.VISIBLE);
+            wv_mins.setAdapter(new NumericWheelAdapter(0, 59));
+            wv_mins.setCyclic(true);// 可循环滚动
+            wv_mins.setLabel("分");// 添加文字
+            wv_mins.setCurrentItem(minute);
+        } else {
             wv_mins.setVisibility(View.GONE);
         }
-
         // 添加"年"监听
         OnWheelChangedListener wheelListener_year = new OnWheelChangedListener() {
             public void onChanged(WheelView wheel, int oldValue, int newValue) {
@@ -172,11 +181,7 @@ public class WheelMain {
         wv_month.addChangingListener(wheelListener_month);
 
         // 根据屏幕密度来指定选择器字体的大小(不同屏幕可能不同)
-        int textSize = 0;
-        if (hasSelectTime)
-            textSize = (screenheight / 100) * 3;
-        else
-            textSize = (screenheight / 100) * 4;
+        int textSize = screenheight / 40;
         wv_day.TEXT_SIZE = textSize;
         wv_month.TEXT_SIZE = textSize;
         wv_year.TEXT_SIZE = textSize;
@@ -187,16 +192,51 @@ public class WheelMain {
 
     public String getTime() {
         StringBuffer sb = new StringBuffer();
-//		if(!hasSelectTime)
-//			sb.append((wv_year.getCurrentItem() + START_YEAR)).append("-")
-//				.append((wv_month.getCurrentItem() + 1)).append("-")
-//				.append((wv_day.getCurrentItem() + 1));
-//		else
         sb.append((wv_year.getCurrentItem() + START_YEAR)).append("-")
                 .append((wv_month.getCurrentItem() + 1)).append("-")
                 .append((wv_day.getCurrentItem() + 1)).append(" ")
                 .append(wv_hours.getCurrentItem()).append(":")
                 .append(wv_mins.getCurrentItem());
         return sb.toString();
+    }
+
+    public boolean isHasMinute() {
+        return hasMinute;
+    }
+
+    public void setHasMinute(boolean hasMinute) {
+        this.hasMinute = hasMinute;
+    }
+
+    public boolean isHasHour() {
+        return hasHour;
+    }
+
+    public void setHasHour(boolean hasHour) {
+        this.hasHour = hasHour;
+    }
+
+    public boolean isHasDay() {
+        return hasDay;
+    }
+
+    public void setHasDay(boolean hasDay) {
+        this.hasDay = hasDay;
+    }
+
+    public boolean isHasMonth() {
+        return hasMonth;
+    }
+
+    public void setHasMonth(boolean hasMonth) {
+        this.hasMonth = hasMonth;
+    }
+
+    public boolean isHasYear() {
+        return hasYear;
+    }
+
+    public void setHasYear(boolean hasYear) {
+        this.hasYear = hasYear;
     }
 }

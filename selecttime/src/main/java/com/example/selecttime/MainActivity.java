@@ -40,6 +40,11 @@ public class MainActivity extends Activity {
                 final View timepickerview = inflater.inflate(R.layout.timepicker, null);
                 ScreenInfo screenInfo = new ScreenInfo(MainActivity.this);
                 wheelMain = new WheelMain(timepickerview);
+                wheelMain.setHasYear(true);
+                wheelMain.setHasMonth(true);
+                wheelMain.setHasDay(true);
+                wheelMain.setHasHour(true);
+                wheelMain.setHasMinute(true);
                 wheelMain.screenheight = screenInfo.getHeight();
                 String time = editText.getText().toString();
                 Calendar calendar = Calendar.getInstance();
