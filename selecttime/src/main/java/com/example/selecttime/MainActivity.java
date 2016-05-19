@@ -36,6 +36,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View arg0) {
+                setTheme(android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen);
                 LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
                 final View timepickerview = inflater.inflate(R.layout.timepicker, null);
                 ScreenInfo screenInfo = new ScreenInfo(MainActivity.this);
@@ -45,6 +46,7 @@ public class MainActivity extends Activity {
                 wheelMain.setHasDay(true);
                 wheelMain.setHasHour(true);
                 wheelMain.setHasMinute(true);
+                wheelMain.setHasSecond(true);
                 wheelMain.screenheight = screenInfo.getHeight();
                 String time = editText.getText().toString();
                 Calendar calendar = Calendar.getInstance();
@@ -68,7 +70,10 @@ public class MainActivity extends Activity {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                editText.setText(wheelMain.getTime());
+                                editText.setText("");
+                                editText.append(wheelMain.getCookedTime());
+                                editText.append("\n");
+                                editText.append(wheelMain.getOriginalTime());
                             }
                         })
                         .setNegativeButton("取消", new DialogInterface.OnClickListener() {

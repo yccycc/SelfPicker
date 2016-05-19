@@ -16,12 +16,14 @@ public class WheelMain {
     private WheelView wv_day;
     private WheelView wv_hours;
     private WheelView wv_mins;
+    private WheelView wv_sec;
     private boolean hasSelectTime;
     private boolean hasYear;
     private boolean hasMonth;
     private boolean hasDay;
     private boolean hasHour;
     private boolean hasMinute;
+    private boolean hasSecond;
 
     public WheelMain(View view) {
         super();
@@ -75,6 +77,7 @@ public class WheelMain {
         wv_day = (WheelView) view.findViewById(R.id.day);
         wv_hours = (WheelView) view.findViewById(R.id.hour);
         wv_mins = (WheelView) view.findViewById(R.id.min);
+        wv_sec = (WheelView) view.findViewById(R.id.sec);
 
         //---年
         if (hasYear) {
@@ -138,6 +141,17 @@ public class WheelMain {
         } else {
             wv_mins.setVisibility(View.GONE);
         }
+
+        //---秒
+        if (hasSecond) {
+            wv_sec.setVisibility(View.VISIBLE);
+            wv_sec.setAdapter(new NumericWheelAdapter(0, 59));
+            wv_sec.setCyclic(true);// 可循环滚动
+            wv_sec.setLabel("秒");// 添加文字
+            wv_sec.setCurrentItem(minute);
+        } else {
+            wv_sec.setVisibility(View.GONE);
+        }
         // 添加"年"监听
         OnWheelChangedListener wheelListener_year = new OnWheelChangedListener() {
             public void onChanged(WheelView wheel, int oldValue, int newValue) {
@@ -187,16 +201,29 @@ public class WheelMain {
         wv_year.TEXT_SIZE = textSize;
         wv_hours.TEXT_SIZE = textSize;
         wv_mins.TEXT_SIZE = textSize;
+        wv_sec.TEXT_SIZE = textSize;
 
     }
 
-    public String getTime() {
+    public String getCookedTime() {
         StringBuffer sb = new StringBuffer();
-        sb.append((wv_year.getCurrentItem() + START_YEAR)).append("-")
-                .append((wv_month.getCurrentItem() + 1)).append("-")
-                .append((wv_day.getCurrentItem() + 1)).append(" ")
-                .append(wv_hours.getCurrentItem()).append(":")
-                .append(wv_mins.getCurrentItem());
+        Object object = hasYear ? sb.append((wv_year.getCurrentItem() + START_YEAR)).append(wv_year.getLabel()) : null;
+        object = hasMonth ? sb.append((wv_month.getCurrentItem() + 1)).append(wv_month.getLabel()) : null;
+        object = hasDay ? sb.append((wv_day.getCurrentItem() + 1)).append(wv_day.getLabel()) : null;
+        object = hasHour ? sb.append(wv_hours.getCurrentItem()).append(wv_hours.getLabel()) : null;
+        object = hasMinute ? sb.append(wv_mins.getCurrentItem()).append(wv_mins.getLabel()) : null;
+        object = hasSecond ? sb.append(wv_sec.getCurrentItem()).append(wv_sec.getLabel()) : null;
+        return sb.toString();
+    }
+
+    public String getOriginalTime() {
+        StringBuffer sb = new StringBuffer();
+        Object object = hasYear ? sb.append((wv_year.getCurrentItem() + START_YEAR)) : null;
+        object = hasMonth ? sb.append(String.format("%02d", wv_month.getCurrentItem() + 1)) : null;
+        object = hasDay ? sb.append(String.format("%02d", wv_day.getCurrentItem() + 1)) : null;
+        object = hasHour ? sb.append(String.format("%02d", wv_hours.getCurrentItem())) : null;
+        object = hasMinute ? sb.append(String.format("%02d", wv_mins.getCurrentItem())) : null;
+        object = hasSecond ? sb.append(String.format("%02d", wv_sec.getCurrentItem())) : null;
         return sb.toString();
     }
 
@@ -238,5 +265,13 @@ public class WheelMain {
 
     public void setHasYear(boolean hasYear) {
         this.hasYear = hasYear;
+    }
+
+    public boolean isHasSecond() {
+        return hasSecond;
+    }
+
+    public void setHasSecond(boolean hasSecond) {
+        this.hasSecond = hasSecond;
     }
 }
